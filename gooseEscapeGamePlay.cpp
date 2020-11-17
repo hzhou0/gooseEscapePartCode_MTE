@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
+
 using namespace std;
+
 #include <BearLibTerminal.h>
 #include "gooseEscapeUtil.hpp"
 #include "gooseEscapeActors.hpp"
@@ -21,7 +23,7 @@ V
 
 y direction 
 */
-	
+
 /*
     Print the game world
     
@@ -30,9 +32,9 @@ y direction
 */
 
 // print the game board function
-{
-    terminal_put(x_location_on_board,y_location_on_board,WIN_CHAR);
-}
+
+
+
 
 /*
     Do something when the goose captures the player
@@ -43,10 +45,10 @@ y direction
     updated.  Run, use weapons, it's up to you!
 */
 
-bool captured(Actor const & player, Actor const & monster)
+bool captured(Actor const &player, Actor const &monster)
 {
-    return (player.get_x() == monster.get_x() 
-         && player.get_y() == monster.get_y());
+    return (player.get_x() == monster.get_x()
+            && player.get_y() == monster.get_y());
 }
 
 /*
@@ -60,7 +62,7 @@ bool captured(Actor const & player, Actor const & monster)
     You could decide to learn about switch statements and use them here.
 */
 
-void movePlayer(int key, Actor & player, /* game board array and any other parameters */);
+void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
 {
     int yMove = 0, xMove = 0;
     if (key == TK_UP)
@@ -71,9 +73,9 @@ void movePlayer(int key, Actor & player, /* game board array and any other param
         xMove = -1;
     else if (key == TK_RIGHT)
         xMove = 1;
-        
-    if (player.can_move(xMove, yMove) 
-      && /*new location on game board */ != SHALL_NOT_PASS)
+
+    if (player.can_move(xMove, yMove)
+        && map[xMove][yMove] != SHALL_NOT_PASS)
         player.update_location(xMove, yMove);
 }
 

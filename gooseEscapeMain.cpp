@@ -32,15 +32,17 @@ int main()
 	Actor monster(MONSTER_CHAR, 70,20);
 	
     // Declare the array that will hold the game board "map"
-
+    //320*180, given common 16x9 screen ratio
+    //x coord, y coord
+    int map[NUM_BOARD_X][NUM_BOARD_Y];
 /*
     Initiallize locations in the game board to have game features.  What if you
-    have man things to add to the game board?  Should you use a loop?  Does it
+    have many things to add to the game board?  Should you use a loop?  Does it
     make sense to store this information in a file?  Should this code be a
     function as well?
 */
-    /* game map location */ = SHALL_NOT_PASS;
-    /* game map location */ = WINNER;
+    map[NUM_BOARD_X/2][NUM_BOARD_Y/2] = SHALL_NOT_PASS;
+    map[0][0] = WINNER;
   	
     // Call the function to print the game board
   	
@@ -62,7 +64,7 @@ int main()
     int keyEntered = TK_A;  // can be any valid value that is not ESCAPE or CLOSE
     
     while(keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE 
-                    && !captured(player,monster) && /* has not won yet */)
+                    && !captured(player,monster) && (map[player.get_x()][player.get_y()]!=WINNER))
 	{
 	    // get player key press
 	    keyEntered = terminal_read();
@@ -70,7 +72,7 @@ int main()
         if (keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE)
         {
             // move the player, you can modify this function
-    	    movePlayer(keyEntered,player,/* game board array and maybe other parameters*/);
+    	    movePlayer(keyEntered,player, map);
 
             // call the goose's chase function
             

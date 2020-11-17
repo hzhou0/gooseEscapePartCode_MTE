@@ -19,7 +19,6 @@
 const int EMPTY = 0;
 const int SHALL_NOT_PASS = 1;
 const int WINNER = 2;
-
 /*
     A few examples of characters both for actors and for the game board
     itself are shown.
@@ -57,12 +56,12 @@ bool captured(Actor const & player, Actor const & monster);
     You could decide to learn about switch statements and use them here.
 */
 
-void movePlayer(int key, Actor & player, /* game board array and any other parameters */);
+void movePlayer(int key, Actor & player, int map[NUM_BOARD_X][NUM_BOARD_Y]);
 
 /*
     What other functions do you need to make the game work?  What can you
     add to the basic functionality to make it more fun to play?
 */
-
+//void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
 
 #endif
