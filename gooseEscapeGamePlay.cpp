@@ -1,3 +1,15 @@
+/*
+TODO:
+Work through this skeleton
+
+*/
+
+/*
+File of constants and prototype functions for the game...
+Prototype functions are in the corresponding *.hpp file
+
+*/
+
 #include <iostream>
 #include <cmath>
 
@@ -45,7 +57,7 @@ y direction
     updated.  Run, use weapons, it's up to you!
 */
 
-bool captured(Actor const &player, Actor const &monster)
+bool captured(Actor const & player, Actor const & monster)
 {
     return (player.get_x() == monster.get_x()
             && player.get_y() == monster.get_y());
@@ -79,7 +91,4 @@ void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
         player.update_location(xMove, yMove);
 }
 
-/*
-    What other functions do you need to make the game work?  What can you
-    add to the basic functionality to make it more fun to play?
-*/
+// for-fun and quality-of-life functions

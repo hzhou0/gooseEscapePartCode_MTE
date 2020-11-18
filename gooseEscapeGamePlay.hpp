@@ -1,13 +1,21 @@
+/*
+TODO:
+Work through this skeleton
+
+*/
+
+/*
+File of constants and prototype functions for the game...
+Fleshed-out functions are in the corresponding *.cpp file
+
+*/
+
 #ifndef GOOSE_ESCAPE_GAMEPLAY
 #define GOOSE_ESCAPE_GAMEPLAY
+
 #include "gooseEscapeUtil.hpp"
 #include "gooseEscapeActors.hpp"
 #include "gooseEscapeConsole.hpp"
-
-/*This file is all about the game world.  You will modify this to add
-    constants and function prototypes.  Modify gooseGamePlay.cpp to
-	actually add functionality.
-*/
 
 /*
     Declare constants to indicate various game world features in the board
@@ -24,10 +32,10 @@ const int WINNER = 2;
     itself are shown.
 */	
 //display characters
-const int PLAYER_CHAR = int('@');
-const int MONSTER_CHAR = int('G');
-const int WALL_CHAR = int('o');
-const int WIN_CHAR = int('%'); //% sign, a special character used in the ancient game "Rogue"
+const int PLAYER_CHAR = int('@');  // player character controlled by user
+const int MONSTER_CHAR = int('G');  // goose to avoid
+const int WALL_CHAR = int('o');  // impassable barrier for player character
+const int WIN_CHAR = int('%');  // win condition to move toward
 
 /*
     Game play function prototypes are give below.
@@ -43,6 +51,7 @@ const int WIN_CHAR = int('%'); //% sign, a special character used in the ancient
     then fight.  You could add a health to the Actor class that is
     updated.  Run, use weapons, it's up to you!
 */
+
 bool captured(Actor const & player, Actor const & monster);
 
 /*
@@ -58,10 +67,8 @@ bool captured(Actor const & player, Actor const & monster);
 
 void movePlayer(int key, Actor & player, int map[NUM_BOARD_X][NUM_BOARD_Y]);
 
-/*
-    What other functions do you need to make the game work?  What can you
-    add to the basic functionality to make it more fun to play?
-*/
-//void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
+// for-fun and quality-of-life functions
+
+// void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
 
 #endif

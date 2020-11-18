@@ -1,5 +1,17 @@
+/*
+TODO:
+Work through this skeleton
+
+*/
+
+/*
+File for the Actor class
+
+*/
+
 #ifndef GOOSE_ESCAPE_ACTORS
 #define GOOSE_ESCAPE_ACTORS
+
 #include <cmath>
 #include <BearLibTerminal.h>
 #include "gooseEscapeUtil.hpp"
