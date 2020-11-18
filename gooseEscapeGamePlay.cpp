@@ -87,7 +87,7 @@ void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
         xMove = 1;
 
     if (player.can_move(xMove, yMove)
-        && map[xMove][yMove] != SHALL_NOT_PASS)
+        && map[player.get_x()+xMove][player.get_y()+yMove] != SHALL_NOT_PASS)
         player.update_location(xMove, yMove);
 }
 

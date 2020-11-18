@@ -32,7 +32,7 @@ File for the Actor class
 class Actor
 {
   private:
-    int actorChar;      
+    int actorChar{};
     int location_x, location_y;
 
   public:

@@ -36,14 +36,17 @@ int main()
     int map[NUM_BOARD_X][NUM_BOARD_Y];
     
     // initialize features in the game map
-    map[NUM_BOARD_X/2][NUM_BOARD_Y/2] = SHALL_NOT_PASS;
+    map[0][1] = SHALL_NOT_PASS;
     map[0][0] = WINNER;
 
 	// initialize the player and goose monster
 	Actor player(PLAYER_CHAR, 10, 10);  // the player
 	Actor monster(MONSTER_CHAR, 70, 20);  	// the monster
+    Actor wall(WALL_CHAR, 0, 1);  	// wall
+    Actor win(WIN_CHAR,0,0);
 
-	// printing the game instructions
+
+    // printing the game instructions
     out.writeLine("Escape the Goose! " + monster.get_location_string());
 	out.writeLine("Use the arrow keys to move");
 	out.writeLine("If the goose catches you, you lose!");

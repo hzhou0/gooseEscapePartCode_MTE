@@ -15,7 +15,6 @@ V
 
 y direction 
 */
-
 // Screen layout
 const int NUM_SCREEN_X = 80;
 const int NUM_SCREEN_Y = 25;
