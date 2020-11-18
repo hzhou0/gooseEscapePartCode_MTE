@@ -1,6 +1,7 @@
 /*
 TODO:
 Work through this skeleton
+Create random num generator function
 
 */
 
@@ -22,6 +23,7 @@ using namespace std;
 #include "gooseEscapeGamePlay.hpp"
 
 extern Console out;
+
 /*
 With graphics, screens are given an x,y coordinate system with the origin
 in the upper left corner.  So it means the coordinate axes are:
@@ -36,44 +38,19 @@ V
 y direction 
 */
 
-/*
-    Print the game world
-    
-    The functions should draw characters to present features of the game
-    board, e.g. win location, obstacles, power ups
-*/
 
 // print the game board function
 
-
-
-
-/*
-    Do something when the goose captures the player
-    
-    If you want to attack or something else, this is the function you 
-    need to change.  For example, maybe the two touch each other and
-    then fight.  You could add a health to the Actor class that is
-    updated.  Run, use weapons, it's up to you!
-*/
-
-bool captured(Actor const & player, Actor const & monster)
+// randomly generate integers to place the player, goose, and other features
+int random_nums(int lower_limit, int upper_limit)
 {
-    return (player.get_x() == monster.get_x()
-            && player.get_y() == monster.get_y());
+//	srand((int) time(0));  // time is undeclared?
+	int a_random = (rand() % lower_limit) + upper_limit;
+
+	return a_random;  // int randomly generated between lower and upper limits
 }
 
-/*
-    Move the player to a new location based on the user input.  You may want
-    to modify this if there are extra controls you want to add.
-    
-    All key presses start with "TK_" then the character.  So "TK_A" is the a
-    key being pressed.
-    
-    A look-up table might be useful.
-    You could decide to learn about switch statements and use them here.
-*/
-
+// move player based on keypresses, could use look-up table or switches
 void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
 {
     int yMove = 0, xMove = 0;
@@ -86,9 +63,20 @@ void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
     else if (key == TK_RIGHT)
         xMove = 1;
 
-    if (player.can_move(xMove, yMove)
-        && map[player.get_x()+xMove][player.get_y()+yMove] != SHALL_NOT_PASS)
-        player.update_location(xMove, yMove);
+    if (player.can_move(xMove, yMove) &&
+		map[player.get_x() + xMove][player.get_y() + yMove] != SHALL_NOT_PASS)
+	{
+		player.update_location(xMove, yMove);
+	}
+}
+
+// event(s) for when the goose catches the player, can have a fight, HP bar, etc
+bool captured(Actor const & player, Actor const & monster)
+{
+    return (player.get_x() == monster.get_x()
+            && player.get_y() == monster.get_y());
 }
 
 // for-fun and quality-of-life functions
+
+// void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
