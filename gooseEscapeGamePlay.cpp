@@ -13,6 +13,8 @@ Prototype functions are in the corresponding *.hpp file
 
 #include <iostream>
 #include <cmath>
+#include <vector>
+#include <chrono>
 
 using namespace std;
 
@@ -41,17 +43,39 @@ y direction
 
 // print the game board function
 
-// randomly generate integers to place the player, goose, and other features
-int random_nums(int lower_limit, int upper_limit)
-{
-//	srand((int) time(0));  // time is undeclared?
-	int a_random = (rand() % lower_limit) + upper_limit;
 
-	return a_random;  // int randomly generated between lower and upper limits
+vector<Actor> wallSection(const int start[2], const int end[2], map map)
+{
+    int current[2]={};
+    current[0]=start[0];
+    current[1]=start[1];
+    vector<Actor> walls;
+    while(!(current[0]==end[0]&&current[1]==end[1]))
+    {
+        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1]);
+        map[current[0]][current[1]]=SHALL_NOT_PASS;
+        if (end[0] > current[0])
+        {
+            current[0]++;
+        }
+        else if (end[0] < current[0])
+        {
+            current[0]--;
+        }
+        if (end[1] > current[1])
+        {
+            current[1]++;
+        }
+        else if (end[1] < current[1])
+        {
+            current[1]--;
+        }
+    }
+    return walls;
 }
 
 // move player based on keypresses, could use look-up table or switches
-void movePlayer(int key, Actor &player, int map[NUM_BOARD_X][NUM_BOARD_Y])
+void movePlayer(int key, Actor &player, map map)
 {
     int yMove = 0, xMove = 0;
     if (key == TK_UP)
@@ -77,6 +101,40 @@ bool captured(Actor const & player, Actor const & monster)
             && player.get_y() == monster.get_y());
 }
 
+
 // for-fun and quality-of-life functions
 
+void gooseApproaching(Actor &player, Actor &monster)
+{
+    static auto lastmove=chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = chrono::system_clock::now()-lastmove;
+    if(elapsed_seconds.count()>GOOSE_MOVE_INTERVAL)
+    {
+        lastmove=chrono::system_clock::now();
+        // Some computation here
+        int yMove = 0, xMove = 0;
+        if (monster.get_x() > player.get_x())
+        {
+            xMove = -1;
+        }
+        else if (monster.get_x() < player.get_x())
+        {
+            xMove = 1;
+        }
+        if (monster.get_y() > player.get_y())
+        {
+            yMove = -1;
+        }
+        else if (monster.get_y() < player.get_y())
+        {
+            yMove = 1;
+        }
+        cout << xMove << yMove;
+        if (monster.can_move(xMove, yMove))
+        {
+            monster.update_location(xMove, yMove);
+        }
+        cout << monster.get_location_string() << endl;
+    }
+}
 // void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
