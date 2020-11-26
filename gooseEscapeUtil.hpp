@@ -40,6 +40,10 @@ const int MIN_CONSOLE_Y = MAX_BOARD_Y + 1;
 const int MAX_CONSOLE_X = MAX_SCREEN_X;
 const int MAX_CONSOLE_Y = MAX_SCREEN_Y;
 
+/*
+ * The amount of tiles in the game.
+ * Each tile represents a screen.
+ */
 const int TILES_X=10;
 const int TILES_Y=10;
 

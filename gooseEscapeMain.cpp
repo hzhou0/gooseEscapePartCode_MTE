@@ -41,15 +41,17 @@ int main()
 
     // initialize the player and goose monster
     Actor player(PLAYER_CHAR, 70, 10, TILES_X / 2, TILES_Y / 2);  // the player
-
+    //generates walls on each tile
     vector<array<int, 6>> walls = genWall(map);
+    //generate a random number of geese up to the cap on random tiles
     vector<Actor> monsters = genMonster(100);
 
     default_random_engine gen(
             chrono::system_clock::now().time_since_epoch().count());
     uniform_int_distribution<int> rand(0, 50);
-    Actor win(WINNER, MAX_BOARD_X / 2, MAX_BOARD_Y / 2, rand(gen)%TILES_X, rand(gen)%TILES_Y,
-              false);
+    // Randomly places the win point on some tile
+    Actor win(WINNER, MAX_BOARD_X / 2, MAX_BOARD_Y / 2,
+              rand(gen)%TILES_X, rand(gen)%TILES_Y, false);
     map[win.get_x()][win.get_y()][win.get_tile_x()][win.get_tile_y()] = WINNER;
 
     // printing the game instructions
@@ -74,15 +76,17 @@ int main()
            && !captured(player, monsters)
            && (map[player.get_x()][player.get_y()][player.get_tile_x()][player.get_tile_y()] != WINNER))
     {
+        //Move the geese toward the player
         gooseApproaching(player, monsters);
-        if (terminal_has_input())
+        if (terminal_has_input())//Make reading input non-blocking
         {
             keyEntered = terminal_read();  // get player key press
             if (keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE)
             {
-                if (movePlayer(keyEntered, player, map))
+                if (movePlayer(keyEntered, player, map))//if player moves to different tile
                 {
-                    renderEnv(player, walls, win, map);
+                    renderEnv(player, walls, win, map);//renders the new tile
+                    //update the tile location readout
                     out.writeLine(
                             "Escape the Goose! (They're everywhere) Player: " +
                             player.print_tile_string() + " Win: " +
@@ -91,17 +95,10 @@ int main()
                     out.writeLine("If the goose catches you, you get torn to shreds.");
                     out.writeLine(
                             "Mere walls cannot hope to stop geese. ");
-                }  // move the player
-                // move goose
-                // call other functions to do stuff?
+                }
             }
         }
-        // gooseApproaching(player,monster);
     }
-    /*
-    Game end...
-
-    */
 
     // game naturally finished without closing the game window
     if (keyEntered != TK_CLOSE && keyEntered != TK_ESCAPE)
@@ -121,7 +118,6 @@ int main()
         // close window based on user input
         while (terminal_read() != TK_CLOSE && terminal_read() != TK_ESCAPE);
     }
-
     terminal_close();  // close game
 }
 

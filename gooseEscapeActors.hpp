@@ -68,7 +68,7 @@ public:
     {
         return location_y;
     }
-
+    //returns the tile locations
     int get_tile_x() const
     {
         return location_tile_x;

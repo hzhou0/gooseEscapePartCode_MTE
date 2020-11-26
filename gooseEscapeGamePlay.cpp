@@ -59,6 +59,7 @@ array<int, 6> wallSection(const int startX, const int startY, const int endX,
     int current_x, current_y;
     current_x = startX;
     current_y = startY;
+    //Generates walls from the start to the end
     while (!(current_x ==
              endX && current_y
                      == endY))
@@ -67,6 +68,7 @@ array<int, 6> wallSection(const int startX, const int startY, const int endX,
                 SHALL_NOT_PASS;
         if (render)
         {
+            //Actually prints the wall
             Actor wall(SHALL_NOT_PASS, current_x, current_y, tileX, tileY);
         }
         if (endX > current_x)
@@ -86,9 +88,9 @@ array<int, 6> wallSection(const int startX, const int startY, const int endX,
             current_y--;
         }
     }
+    //returns the vector of walls instead of the wall objects to optimize performance
     array<int, 6> data = {startX, startY, endX, endY, tileX, tileY};
-    return
-            data;
+    return data;
 }
 
 vector<array<int, 6>> genWall(map map)
@@ -96,7 +98,8 @@ vector<array<int, 6>> genWall(map map)
     default_random_engine gen(
             chrono::system_clock::now().time_since_epoch().count());
     uniform_int_distribution<int> rand(0, 100);
-
+    //Generates random amount of wallSections of each tile
+    //Generate barrier walls for tiles at the outer limits
     vector<array<int, 6>> walls;
     for (int i = 0; i < TILES_X; i++)
     {
@@ -138,6 +141,7 @@ vector<array<int, 6>> genWall(map map)
 }
 
 // move player based on keypresses, could use look-up table or switches
+// return true if the player crosses over to a different tile
 bool movePlayer(int key, Actor &player, map map)
 {
     static auto lastmove = chrono::system_clock::now();
@@ -172,6 +176,7 @@ bool movePlayer(int key, Actor &player, map map)
 }
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
+// Check if the player and the geese is on the same tile and position
 bool captured(Actor const &player, vector<Actor> const &monsters)
 {
     for (auto const &monster: monsters)
