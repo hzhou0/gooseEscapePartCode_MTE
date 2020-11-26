@@ -13,8 +13,9 @@ Prototype functions are in the corresponding *.hpp file
 
 #include <iostream>
 #include <cmath>
-#include <vector>
+#include <array>
 #include <chrono>
+#include <vector>
 
 using namespace std;
 
@@ -44,36 +45,49 @@ y direction
 // print the game board function
 
 
-vector<Actor>
-wallSection(const int start[2], const int end[2], const int tile[2], map map)
+
+
+
+
+
+array<int, 6> wallSection(const int start_x, const int start_y, const int end_x,
+                          const int end_y, const int tile_x, const int tile_y,
+                          map map,
+                          bool render)
 {
-    int current[2] = {};
-    current[0] = start[0];
-    current[1] = start[1];
-    vector<Actor> walls;
-    while (!(current[0] == end[0] && current[1] == end[1]))
+    int current_x, current_y;
+    current_x = start_x;
+    current_y = start_y;
+    while (!(current_x ==
+             end_x && current_y
+                      == end_y))
     {
-        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1], tile[0],
-                           tile[1]);
-        map[current[0]][current[1]][tile[0]][tile[1]] = SHALL_NOT_PASS;
-        if (end[0] > current[0])
+        map[current_x][current_y][tile_x][tile_y] =
+                SHALL_NOT_PASS;
+        if (render)
         {
-            current[0]++;
+            Actor wall(SHALL_NOT_PASS, current_x, current_y, tile_x, tile_y);
         }
-        else if (end[0] < current[0])
+        if (end_x > current_x)
         {
-            current[0]--;
+            current_x++;
         }
-        if (end[1] > current[1])
+        else if (end_x < current_x)
         {
-            current[1]++;
+            current_x--;
         }
-        else if (end[1] < current[1])
+        if (end_y > current_y)
         {
-            current[1]--;
+            current_y++;
+        }
+        else if (end_y < current_y)
+        {
+            current_y--;
         }
     }
-    return walls;
+    array<int, 6> data = {start_x, start_y, end_x, end_y, tile_x, tile_y};
+    return
+            data;
 }
 
 // move player based on keypresses, could use look-up table or switches
@@ -169,14 +183,17 @@ void gooseApproaching(Actor &player, Actor &monster)
 }
 
 
-void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win)
+void
+renderEnv(const Actor &player, const vector<array<int, 6>> &walls,
+          const Actor &win, map map)
 {
     for (auto &&wall:walls)
     {
-        if (wall.get_tile_x() == player.get_tile_x() &&
-            wall.get_tile_y() == player.get_tile_y())
+        if (wall[4] == player.get_tile_x() &&
+            wall[5] == player.get_tile_y())
         {
-            wall.put_actor();
+            wallSection(wall[0], wall[1], wall[2], wall[3], wall[4], wall[5],
+                        map, true);
         }
         if (player.get_tile_x() == win.get_tile_x() &&
             player.get_tile_y() == win.get_tile_y())

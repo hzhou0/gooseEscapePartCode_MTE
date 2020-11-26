@@ -10,7 +10,7 @@ Call other for-fun functions, in main game loop
 #include <BearLibTerminal.h>
 #include <cmath>
 #include <iostream>
-
+#include <vector>
 using namespace std;
 
 #include "gooseEscapeUtil.hpp"
@@ -21,7 +21,8 @@ using namespace std;
 Console out;  // set up the console, do not modify
 
 
-void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win);
+void
+renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win);
 
 int main()
 {
@@ -41,20 +42,29 @@ int main()
     map[0][0][0][0] = WINNER;
 
     // initialize the player and goose monster
-    Actor player(PLAYER_CHAR, 70, 10,0,0);  // the player
-    Actor monster(MONSTER_CHAR, 70, 20,0,0);  // the monster
-
+    Actor player(PLAYER_CHAR, 70, 10, 0, 0);  // the player
+    Actor monster(MONSTER_CHAR, 70, 20, 0, 0);  // the monster
     int start[] = {30, 5};
     int end[] = {40, 20};
-    int tile[]={0,0};
-    auto walls=wallSection(start, end, tile, map);
-    Actor win(WINNER, 0, 0,0,0);
+    int tile[] = {0, 0};
+
+    vector<array<int,6>> walls;
+    for (int i = 0; i < TILES_X; i++)
+    {
+        for (int s = 0; s < TILES_Y; s++)
+        {
+            auto curWall = wallSection(30+i,5+i,40+s,20+s,i,s,map, false);
+            walls.emplace_back(curWall);
+        }
+    }
+    Actor win(WINNER, 0, 0, 0, 0);
 
     // printing the game instructions
     out.writeLine("Escape the Goose! " + monster.get_location_string());
     out.writeLine("Use the arrow keys to move.");
     out.writeLine("If the goose catches you, you lose!");
     out.writeLine("Be careful! Sometimes the goose can jump through walls!");
+    renderEnv(player, walls, win, map);
 
 
     /*
@@ -69,19 +79,20 @@ int main()
            && (map[player.get_x()][player.get_y()][0][0] != WINNER))
     {
         gooseApproaching(player, monster);
-        if(terminal_has_input())
+        if (terminal_has_input())
         {
             keyEntered = terminal_read();  // get player key press
             if (keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE)
             {
-                if(movePlayer(keyEntered, player, map)){
-                    renderEnv(player, walls, win);
+                if (movePlayer(keyEntered, player, map))
+                {
+                    renderEnv(player, walls, win, map);
                 };  // move the player
                 // move goose
                 // call other functions to do stuff?
             }
         }
-       // gooseApproaching(player,monster);
+        // gooseApproaching(player,monster);
     }
     /*
     Game end...

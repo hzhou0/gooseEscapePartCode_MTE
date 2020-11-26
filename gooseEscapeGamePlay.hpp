@@ -16,7 +16,7 @@ Fleshed-out functions are in the corresponding *.cpp file
 #include "gooseEscapeUtil.hpp"
 #include "gooseEscapeActors.hpp"
 #include "gooseEscapeConsole.hpp"
-#include <vector>
+#include <array>
 
 /*
 Constants for game features, can use enum in place of integers
@@ -42,8 +42,9 @@ Function prototypes...
 // print the game board function protype
 
 //generates and returns a section of wall
-vector<Actor>
-wallSection(const int start[2], const int end[2], const int tile[2], map map);
+array<int, 6> wallSection( int start_x,  int start_y,  int end_x,
+                           int end_y,  int tile_x,  int tile_y,
+                           map map, bool render);
 
 // move player based on keypresses, could use look-up table or switches
 bool movePlayer(int key, Actor & player, map map);
@@ -54,7 +55,8 @@ bool captured(Actor const & player, Actor const & monster);
 // for-fun and quality-of-life functions
 void gooseApproaching(Actor &player, Actor &monster);
 
-void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win);
+void
+renderEnv(const Actor &player, const vector<array<int,6>> &walls, const Actor &win, map map);
 
 // void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
 

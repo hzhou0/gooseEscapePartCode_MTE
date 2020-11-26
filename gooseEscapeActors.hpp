@@ -119,28 +119,32 @@ public:
             {
                 location_x = MAX_BOARD_X;
                 location_tile_x--;
-                terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                    NUM_BOARD_Y);
+                if (actorChar == '@')
+                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
+                                        NUM_BOARD_Y);
             }
             else if (location_tile_x != TILES_X - 1 && new_x > MAX_BOARD_X)
             {
                 location_x = MIN_BOARD_X;
                 location_tile_x++;
-                terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                    NUM_BOARD_Y);
+                if (actorChar == '@')
+                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
+                                        NUM_BOARD_Y);
             }
             if (location_tile_y != 0 && new_y < MIN_BOARD_Y)
             {
                 location_y = MAX_BOARD_Y;
                 location_tile_y--;
-                terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
+                if(actorChar=='@')
+                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
             }
             else if (location_tile_y != TILES_Y - 1 && new_y > MAX_BOARD_Y)
             {
                 location_y = MIN_BOARD_Y;
                 location_tile_y++;
-                terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
+                if(actorChar=='@')
+                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
             }
             return true;
