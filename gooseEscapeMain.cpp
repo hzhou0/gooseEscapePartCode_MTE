@@ -36,17 +36,17 @@ int main()
     map map;
 
     // initialize features in the game map
-    map[0][0] = WINNER;
+    map[0][0][0][0] = WINNER;
 
     // initialize the player and goose monster
-    Actor player(PLAYER_CHAR, 70, 10);  // the player
-    Actor monster(MONSTER_CHAR, 70, 20);  // the monster
+    Actor player(PLAYER_CHAR, 70, 10,0,0);  // the player
+    Actor monster(MONSTER_CHAR, 70, 20,0,0);  // the monster
 
     int start[] = {30, 5};
     int end[] = {40, 20};
-
-    wallSection(start, end, map);
-    Actor win(WINNER, 0, 0);
+    int tile[]={0,0};
+    wallSection(start, end, tile, map);
+    Actor win(WINNER, 0, 0,0,0);
 
     // printing the game instructions
     out.writeLine("Escape the Goose! " + monster.get_location_string());
@@ -64,7 +64,7 @@ int main()
     // continuously taking inputs
     while (keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE
            && !captured(player, monster)
-           && (map[player.get_x()][player.get_y()] != WINNER))
+           && (map[player.get_x()][player.get_y()][0][0] != WINNER))
     {
         if(terminal_has_input())
         {
@@ -78,7 +78,7 @@ int main()
                 // call other functions to do stuff?
             }
         }
-        gooseApproaching(player,monster);
+       // gooseApproaching(player,monster);
     }
     /*
     Game end...

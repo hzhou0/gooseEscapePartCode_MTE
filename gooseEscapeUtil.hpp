@@ -40,7 +40,9 @@ const int MIN_CONSOLE_Y = MAX_BOARD_Y + 1;
 const int MAX_CONSOLE_X = MAX_SCREEN_X;
 const int MAX_CONSOLE_Y = MAX_SCREEN_Y;
 
+const int TILES_X=10;
+const int TILES_Y=10;
 
-typedef int map[NUM_BOARD_X][NUM_BOARD_Y];
+typedef int map[NUM_BOARD_X][NUM_BOARD_Y][TILES_X][TILES_Y];
 
 #endif

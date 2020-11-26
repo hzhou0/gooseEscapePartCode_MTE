@@ -42,10 +42,11 @@ Function prototypes...
 // print the game board function protype
 
 //generates and returns a section of wall
-vector<Actor> wallSection(const int start[2], const int end[2], map map);
+vector<Actor>
+wallSection(const int start[2], const int end[2], const int tile[2], map map);
 
 // move player based on keypresses, could use look-up table or switches
-void movePlayer(int key, Actor & player, int map[NUM_BOARD_X][NUM_BOARD_Y]);
+void movePlayer(int key, Actor & player, map map);
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
 bool captured(Actor const & player, Actor const & monster);

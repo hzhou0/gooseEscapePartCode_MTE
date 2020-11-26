@@ -44,7 +44,7 @@ y direction
 // print the game board function
 
 
-vector<Actor> wallSection(const int start[2], const int end[2], map map)
+vector<Actor> wallSection(const int start[2], const int end[2], const int tile[2], map map)
 {
     int current[2]={};
     current[0]=start[0];
@@ -52,8 +52,8 @@ vector<Actor> wallSection(const int start[2], const int end[2], map map)
     vector<Actor> walls;
     while(!(current[0]==end[0]&&current[1]==end[1]))
     {
-        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1]);
-        map[current[0]][current[1]]=SHALL_NOT_PASS;
+        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1], tile[0], tile[1]);
+        map[current[0]][current[1]][tile[0]][tile[1]]=SHALL_NOT_PASS;
         if (end[0] > current[0])
         {
             current[0]++;
@@ -87,8 +87,7 @@ void movePlayer(int key, Actor &player, map map)
     else if (key == TK_RIGHT)
         xMove = 1;
 
-    if (player.can_move(xMove, yMove) &&
-		map[player.get_x() + xMove][player.get_y() + yMove] != SHALL_NOT_PASS)
+    if (map[player.get_x() + xMove][player.get_y() + yMove][0][0] != SHALL_NOT_PASS)
 	{
 		player.update_location(xMove, yMove);
 	}
@@ -129,12 +128,10 @@ void gooseApproaching(Actor &player, Actor &monster)
         {
             yMove = 1;
         }
-        cout << xMove << yMove;
         if (monster.can_move(xMove, yMove))
         {
             monster.update_location(xMove, yMove);
         }
-        cout << monster.get_location_string() << endl;
     }
 }
 // void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
