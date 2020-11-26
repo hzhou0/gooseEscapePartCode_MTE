@@ -44,16 +44,18 @@ y direction
 // print the game board function
 
 
-vector<Actor> wallSection(const int start[2], const int end[2], const int tile[2], map map)
+vector<Actor>
+wallSection(const int start[2], const int end[2], const int tile[2], map map)
 {
-    int current[2]={};
-    current[0]=start[0];
-    current[1]=start[1];
+    int current[2] = {};
+    current[0] = start[0];
+    current[1] = start[1];
     vector<Actor> walls;
-    while(!(current[0]==end[0]&&current[1]==end[1]))
+    while (!(current[0] == end[0] && current[1] == end[1]))
     {
-        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1], tile[0], tile[1]);
-        map[current[0]][current[1]][tile[0]][tile[1]]=SHALL_NOT_PASS;
+        walls.emplace_back(SHALL_NOT_PASS, current[0], current[1], tile[0],
+                           tile[1]);
+        map[current[0]][current[1]][tile[0]][tile[1]] = SHALL_NOT_PASS;
         if (end[0] > current[0])
         {
             current[0]++;
@@ -75,7 +77,7 @@ vector<Actor> wallSection(const int start[2], const int end[2], const int tile[2
 }
 
 // move player based on keypresses, could use look-up table or switches
-void movePlayer(int key, Actor &player, map map)
+bool movePlayer(int key, Actor &player, map map)
 {
     int yMove = 0, xMove = 0;
     if (key == TK_UP)
@@ -87,14 +89,22 @@ void movePlayer(int key, Actor &player, map map)
     else if (key == TK_RIGHT)
         xMove = 1;
 
-    if (map[player.get_x() + xMove][player.get_y() + yMove][0][0] != SHALL_NOT_PASS)
-	{
-		player.update_location(xMove, yMove);
-	}
+    if (map[player.get_x() + xMove][player.get_y() + yMove]
+        [player.get_tile_x()][player.get_tile_y()] != SHALL_NOT_PASS)
+    {
+        //If the player crossed tiles
+        if (player.update_location(xMove, yMove))
+        {
+            player.put_actor();
+            return true;
+        }
+        player.put_actor();
+    }
+    return false;
 }
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
-bool captured(Actor const & player, Actor const & monster)
+bool captured(Actor const &player, Actor const &monster)
 {
     return (player.get_x() == monster.get_x()
             && player.get_y() == monster.get_y());
@@ -105,32 +115,73 @@ bool captured(Actor const & player, Actor const & monster)
 
 void gooseApproaching(Actor &player, Actor &monster)
 {
-    static auto lastmove=chrono::system_clock::now();
-    chrono::duration<double> elapsed_seconds = chrono::system_clock::now()-lastmove;
-    if(elapsed_seconds.count()>GOOSE_MOVE_INTERVAL)
+    static auto lastmove = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds =
+            chrono::system_clock::now() - lastmove;
+    if (elapsed_seconds.count() > GOOSE_MOVE_INTERVAL)
     {
-        lastmove=chrono::system_clock::now();
+        lastmove = chrono::system_clock::now();
         // Some computation here
         int yMove = 0, xMove = 0;
-        if (monster.get_x() > player.get_x())
+        if (player.get_tile_x() == monster.get_tile_x() &&
+            player.get_tile_y() == monster.get_tile_y())
         {
-            xMove = -1;
-        }
-        else if (monster.get_x() < player.get_x())
-        {
-            xMove = 1;
-        }
-        if (monster.get_y() > player.get_y())
-        {
-            yMove = -1;
-        }
-        else if (monster.get_y() < player.get_y())
-        {
-            yMove = 1;
-        }
-        if (monster.can_move(xMove, yMove))
-        {
+            if (monster.get_x() > player.get_x())
+            {
+                xMove = -1;
+            }
+            else if (monster.get_x() < player.get_x())
+            {
+                xMove = 1;
+            }
+            if (monster.get_y() > player.get_y())
+            {
+                yMove = -1;
+            }
+            else if (monster.get_y() < player.get_y())
+            {
+                yMove = 1;
+            }
             monster.update_location(xMove, yMove);
+            monster.put_actor();
+        }
+        else
+        {
+            if (monster.get_tile_x() > player.get_tile_x())
+            {
+                xMove = -1;
+            }
+            else if (monster.get_tile_x() < player.get_tile_x())
+            {
+                xMove = 1;
+            }
+            if (monster.get_tile_y() > player.get_tile_y())
+            {
+                yMove = -1;
+            }
+            else if (monster.get_tile_y() < player.get_tile_y())
+            {
+                yMove = 1;
+            }
+            monster.update_location(xMove, yMove);
+        }
+    }
+}
+
+
+void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win)
+{
+    for (auto &&wall:walls)
+    {
+        if (wall.get_tile_x() == player.get_tile_x() &&
+            wall.get_tile_y() == player.get_tile_y())
+        {
+            wall.put_actor();
+        }
+        if (player.get_tile_x() == win.get_tile_x() &&
+            player.get_tile_y() == win.get_tile_y())
+        {
+            win.put_actor();
         }
     }
 }

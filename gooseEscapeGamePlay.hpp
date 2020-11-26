@@ -46,13 +46,15 @@ vector<Actor>
 wallSection(const int start[2], const int end[2], const int tile[2], map map);
 
 // move player based on keypresses, could use look-up table or switches
-void movePlayer(int key, Actor & player, map map);
+bool movePlayer(int key, Actor & player, map map);
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
 bool captured(Actor const & player, Actor const & monster);
 
 // for-fun and quality-of-life functions
 void gooseApproaching(Actor &player, Actor &monster);
+
+void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win);
 
 // void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);
 

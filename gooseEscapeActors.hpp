@@ -54,6 +54,7 @@ public:
         location_tile_x = tx0;
         location_tile_y = ty0;
         update_location(x0, y0);
+        put_actor();
     }
 
     int get_x() const
@@ -64,6 +65,16 @@ public:
     int get_y() const
     {
         return location_y;
+    }
+
+    int get_tile_x() const
+    {
+        return location_tile_x;
+    }
+
+    int get_tile_y() const
+    {
+        return location_tile_y;
     }
 
     string get_location_string() const
@@ -92,16 +103,15 @@ public:
                && new_y >= MIN_BOARD_Y && new_y <= MAX_BOARD_Y;
     }
 
-    void update_location(int delta_x, int delta_y)
+    bool update_location(int delta_x, int delta_y)
     {
         if (can_move(delta_x, delta_y))
         {
             terminal_clear_area(location_x, location_y, 1, 1);
             location_x += delta_x;
             location_y += delta_y;
-            put_actor();
         }
-        else if (actorChar == '@')
+        else
         {
             int new_x = location_x + delta_x;
             int new_y = location_y + delta_y;
@@ -111,8 +121,6 @@ public:
                 location_tile_x--;
                 terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
-                put_actor();
-
             }
             else if (location_tile_x != TILES_X - 1 && new_x > MAX_BOARD_X)
             {
@@ -120,30 +128,24 @@ public:
                 location_tile_x++;
                 terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
-                put_actor();
             }
             if (location_tile_y != 0 && new_y < MIN_BOARD_Y)
             {
-                location_y = MAX_BOARD_X;
+                location_y = MAX_BOARD_Y;
                 location_tile_y--;
                 terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
-                put_actor();
             }
             else if (location_tile_y != TILES_Y - 1 && new_y > MAX_BOARD_Y)
             {
-                location_y = MIN_BOARD_X;
+                location_y = MIN_BOARD_Y;
                 location_tile_y++;
                 terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                     NUM_BOARD_Y);
-                put_actor();
-
             }
-            cout << location_x << "," << location_y << "," << location_tile_x
-                 << "," << location_tile_y
-                 << endl;
+            return true;
         }
-
+        return false;
     }
 
     void put_actor() const

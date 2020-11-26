@@ -21,6 +21,8 @@ using namespace std;
 Console out;  // set up the console, do not modify
 
 
+void renderEnv(const Actor &player, const vector<Actor> &walls, const Actor &win);
+
 int main()
 {
     /*
@@ -45,7 +47,7 @@ int main()
     int start[] = {30, 5};
     int end[] = {40, 20};
     int tile[]={0,0};
-    wallSection(start, end, tile, map);
+    auto walls=wallSection(start, end, tile, map);
     Actor win(WINNER, 0, 0,0,0);
 
     // printing the game instructions
@@ -66,15 +68,16 @@ int main()
            && !captured(player, monster)
            && (map[player.get_x()][player.get_y()][0][0] != WINNER))
     {
+        gooseApproaching(player, monster);
         if(terminal_has_input())
         {
             keyEntered = terminal_read();  // get player key press
             if (keyEntered != TK_ESCAPE && keyEntered != TK_CLOSE)
             {
-                movePlayer(keyEntered, player, map);  // move the player
-
+                if(movePlayer(keyEntered, player, map)){
+                    renderEnv(player, walls, win);
+                };  // move the player
                 // move goose
-
                 // call other functions to do stuff?
             }
         }
@@ -105,3 +108,5 @@ int main()
 
     terminal_close();  // close game
 }
+
+
