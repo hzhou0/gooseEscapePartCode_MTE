@@ -16,6 +16,7 @@ Prototype functions are in the corresponding *.hpp file
 #include <array>
 #include <chrono>
 #include <vector>
+#include <random>
 
 using namespace std;
 
@@ -50,84 +51,146 @@ y direction
 
 
 
-array<int, 6> wallSection(const int start_x, const int start_y, const int end_x,
-                          const int end_y, const int tile_x, const int tile_y,
+array<int, 6> wallSection(const int startX, const int startY, const int endX,
+                          const int endY, const int tileX, const int tileY,
                           map map,
                           bool render)
 {
     int current_x, current_y;
-    current_x = start_x;
-    current_y = start_y;
+    current_x = startX;
+    current_y = startY;
     while (!(current_x ==
-             end_x && current_y
-                      == end_y))
+             endX && current_y
+                     == endY))
     {
-        map[current_x][current_y][tile_x][tile_y] =
+        map[current_x][current_y][tileX][tileY] =
                 SHALL_NOT_PASS;
         if (render)
         {
-            Actor wall(SHALL_NOT_PASS, current_x, current_y, tile_x, tile_y);
+            Actor wall(SHALL_NOT_PASS, current_x, current_y, tileX, tileY);
         }
-        if (end_x > current_x)
+        if (endX > current_x)
         {
             current_x++;
         }
-        else if (end_x < current_x)
+        else if (endX < current_x)
         {
             current_x--;
         }
-        if (end_y > current_y)
+        if (endY > current_y)
         {
             current_y++;
         }
-        else if (end_y < current_y)
+        else if (endY < current_y)
         {
             current_y--;
         }
     }
-    array<int, 6> data = {start_x, start_y, end_x, end_y, tile_x, tile_y};
+    array<int, 6> data = {startX, startY, endX, endY, tileX, tileY};
     return
             data;
+}
+
+vector<array<int, 6>> genWall(map map)
+{
+    default_random_engine gen(
+            chrono::system_clock::now().time_since_epoch().count());
+    uniform_int_distribution<int> rand(0, 100);
+
+    vector<array<int, 6>> walls;
+    for (int i = 0; i < TILES_X; i++)
+    {
+        for (int s = 0; s < TILES_Y; s++)
+        {
+            if (i == 0)
+            {
+                walls.emplace_back(wallSection(0,0,0,MAX_BOARD_Y,i,s,map,false));
+            }
+            else if (i == TILES_X-1)
+            {
+                walls.emplace_back(wallSection(MAX_BOARD_X,0,MAX_BOARD_X,MAX_BOARD_Y,i,s,map,false));
+            }
+            if (s == 0)
+            {
+                walls.emplace_back(wallSection(0,0,MAX_BOARD_X,0,i,s,map,false));
+            }
+            else if (s == TILES_Y-1)
+            {
+                walls.emplace_back(wallSection(0,MAX_BOARD_Y,MAX_BOARD_X,MAX_BOARD_Y,i,s,map,false));
+            }
+            else
+            {
+                int wallNum = rand(gen) % 3 + 1;
+                for (int w = 0; w < (wallNum); w++)
+                {
+                    auto curWall = wallSection(rand(gen) % MAX_BOARD_X,
+                                               rand(gen) % MAX_BOARD_Y,
+                                               rand(gen) % MAX_BOARD_X,
+                                               rand(gen) % MAX_BOARD_Y,
+                                               i, s, map,
+                                               false);
+                    walls.emplace_back(curWall);
+                }
+            }
+        }
+    }
+    return walls;
 }
 
 // move player based on keypresses, could use look-up table or switches
 bool movePlayer(int key, Actor &player, map map)
 {
-    int yMove = 0, xMove = 0;
-    if (key == TK_UP)
-        yMove = -1;
-    else if (key == TK_DOWN)
-        yMove = 1;
-    else if (key == TK_LEFT)
-        xMove = -1;
-    else if (key == TK_RIGHT)
-        xMove = 1;
-
-    if (map[player.get_x() + xMove][player.get_y() + yMove]
-        [player.get_tile_x()][player.get_tile_y()] != SHALL_NOT_PASS)
+    static auto lastmove = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds =
+            chrono::system_clock::now() - lastmove;
+    if (elapsed_seconds.count() > PLAYER_MOVE_INTERVAL)
     {
-        //If the player crossed tiles
-        if (player.update_location(xMove, yMove))
+        lastmove = chrono::system_clock::now();
+        int yMove = 0, xMove = 0;
+        if (key == TK_UP)
+            yMove = -1;
+        else if (key == TK_DOWN)
+            yMove = 1;
+        else if (key == TK_LEFT)
+            xMove = -1;
+        else if (key == TK_RIGHT)
+            xMove = 1;
+
+        if (map[player.get_x() + xMove][player.get_y() + yMove]
+            [player.get_tile_x()][player.get_tile_y()] != SHALL_NOT_PASS)
         {
+            //If the player crossed tiles
+            if (player.update_location(xMove, yMove, player))
+            {
+                player.put_actor();
+                return true;
+            }
             player.put_actor();
-            return true;
         }
-        player.put_actor();
     }
     return false;
 }
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
-bool captured(Actor const &player, Actor const &monster)
+bool captured(Actor const &player, vector<Actor> const &monsters)
 {
-    return (player.get_x() == monster.get_x()
-            && player.get_y() == monster.get_y());
+    for (auto const &monster: monsters)
+    {
+        if (player.get_x() == monster.get_x()
+            && player.get_y() == monster.get_y() &&
+            player.get_tile_x() == monster.get_tile_x() &&
+            player.get_tile_y() == monster.get_tile_y())
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 
 // for-fun and quality-of-life functions
 
-void gooseApproaching(Actor &player, Actor &monster)
+void gooseApproaching(Actor &player, vector<Actor> &monsters)
 {
     static auto lastmove = chrono::system_clock::now();
     chrono::duration<double> elapsed_seconds =
@@ -135,49 +198,52 @@ void gooseApproaching(Actor &player, Actor &monster)
     if (elapsed_seconds.count() > GOOSE_MOVE_INTERVAL)
     {
         lastmove = chrono::system_clock::now();
-        // Some computation here
-        int yMove = 0, xMove = 0;
-        if (player.get_tile_x() == monster.get_tile_x() &&
-            player.get_tile_y() == monster.get_tile_y())
+        for (Actor &monster: monsters)
         {
-            if (monster.get_x() > player.get_x())
+            // Some computation here
+            int yMove = 0, xMove = 0;
+            if (player.get_tile_x() == monster.get_tile_x() &&
+                player.get_tile_y() == monster.get_tile_y())
             {
-                xMove = -1;
+                if (monster.get_x() > player.get_x())
+                {
+                    xMove = -1;
+                }
+                else if (monster.get_x() < player.get_x())
+                {
+                    xMove = 1;
+                }
+                if (monster.get_y() > player.get_y())
+                {
+                    yMove = -1;
+                }
+                else if (monster.get_y() < player.get_y())
+                {
+                    yMove = 1;
+                }
+                monster.update_location(xMove, yMove, player);
+                monster.put_actor();
             }
-            else if (monster.get_x() < player.get_x())
+            else
             {
-                xMove = 1;
+                if (monster.get_tile_x() > player.get_tile_x())
+                {
+                    xMove = -1;
+                }
+                else if (monster.get_tile_x() < player.get_tile_x())
+                {
+                    xMove = 1;
+                }
+                if (monster.get_tile_y() > player.get_tile_y())
+                {
+                    yMove = -1;
+                }
+                else if (monster.get_tile_y() < player.get_tile_y())
+                {
+                    yMove = 1;
+                }
+                monster.update_location(xMove, yMove, player);
             }
-            if (monster.get_y() > player.get_y())
-            {
-                yMove = -1;
-            }
-            else if (monster.get_y() < player.get_y())
-            {
-                yMove = 1;
-            }
-            monster.update_location(xMove, yMove);
-            monster.put_actor();
-        }
-        else
-        {
-            if (monster.get_tile_x() > player.get_tile_x())
-            {
-                xMove = -1;
-            }
-            else if (monster.get_tile_x() < player.get_tile_x())
-            {
-                xMove = 1;
-            }
-            if (monster.get_tile_y() > player.get_tile_y())
-            {
-                yMove = -1;
-            }
-            else if (monster.get_tile_y() < player.get_tile_y())
-            {
-                yMove = 1;
-            }
-            monster.update_location(xMove, yMove);
         }
     }
 }
@@ -187,7 +253,7 @@ void
 renderEnv(const Actor &player, const vector<array<int, 6>> &walls,
           const Actor &win, map map)
 {
-    for (auto &&wall:walls)
+    for (auto wall:walls)
     {
         if (wall[4] == player.get_tile_x() &&
             wall[5] == player.get_tile_y())
@@ -201,5 +267,23 @@ renderEnv(const Actor &player, const vector<array<int, 6>> &walls,
             win.put_actor();
         }
     }
+}
+
+vector<Actor> genMonster(int maxNum)
+{
+    vector<Actor> monsters;
+    default_random_engine gen(
+            chrono::system_clock::now().time_since_epoch().count());
+    uniform_int_distribution<int> rand(0, 100);
+    int monsterNum = rand(gen) % maxNum + 1;
+    monsters.reserve(monsterNum);
+    for (int i = 0; i < monsterNum; i++)
+    {
+        monsters.emplace_back(MONSTER_CHAR, rand(gen) % MAX_BOARD_X,
+                              rand(gen) % MAX_BOARD_Y,
+                              rand(gen) % TILES_X,
+                              rand(gen) % TILES_Y, false);
+    }
+    return monsters;
 }
 // void terminal_put(int x_location_on_board, int y_location_on_board,int CHAR);

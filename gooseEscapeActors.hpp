@@ -46,15 +46,17 @@ public:
         put_actor();
     }
 
-    Actor(char initPlayerChar, int x0, int y0, int tx0, int ty0)
+    Actor(char initPlayerChar, int x0, int y0, int tx0, int ty0,
+          bool render = true)
     {
         change_char(initPlayerChar);
         location_x = MIN_SCREEN_X;
         location_y = MIN_SCREEN_Y;
         location_tile_x = tx0;
         location_tile_y = ty0;
-        update_location(x0, y0);
-        put_actor();
+        update_location(x0, y0, *this);
+        if (render)
+            put_actor();
     }
 
     int get_x() const
@@ -89,6 +91,18 @@ public:
         return formatted_location;
     }
 
+    string print_tile_string() const
+    {
+        char buffer[80];
+        //itoa(location_x,buffer,10);
+        sprintf(buffer, "%d", location_tile_x);
+        string formatted_location = "(" + string(buffer) + ",";
+        //itoa(location_y,buffer,10);
+        sprintf(buffer, "%d", location_tile_y);
+        formatted_location += string(buffer) + ")";
+        return formatted_location;
+    }
+
     void change_char(char new_actor_char)
     {
         actorChar = min(int('~'), max(int(new_actor_char), int(' ')));
@@ -103,11 +117,23 @@ public:
                && new_y >= MIN_BOARD_Y && new_y <= MAX_BOARD_Y;
     }
 
-    bool update_location(int delta_x, int delta_y)
+    bool update_location(int delta_x, int delta_y, Actor &player)
     {
         if (can_move(delta_x, delta_y))
         {
-            terminal_clear_area(location_x, location_y, 1, 1);
+
+            if (actorChar != int('@'))
+            {
+                if (location_tile_x == player.get_tile_x() &&
+                    location_tile_y == player.get_tile_y())
+                {
+                    terminal_clear_area(location_x, location_y, 1, 1);
+                }
+            }
+            else
+            {
+                terminal_clear_area(location_x, location_y, 1, 1);
+            }
             location_x += delta_x;
             location_y += delta_y;
         }
@@ -135,17 +161,17 @@ public:
             {
                 location_y = MAX_BOARD_Y;
                 location_tile_y--;
-                if(actorChar=='@')
+                if (actorChar == '@')
                     terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                    NUM_BOARD_Y);
+                                        NUM_BOARD_Y);
             }
             else if (location_tile_y != TILES_Y - 1 && new_y > MAX_BOARD_Y)
             {
                 location_y = MIN_BOARD_Y;
                 location_tile_y++;
-                if(actorChar=='@')
+                if (actorChar == '@')
                     terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                    NUM_BOARD_Y);
+                                        NUM_BOARD_Y);
             }
             return true;
         }

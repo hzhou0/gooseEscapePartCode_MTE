@@ -33,27 +33,28 @@ const int PLAYER_CHAR = int('@');  // player character controlled by user
 const int MONSTER_CHAR = int('G');  // goose to avoid
 
 //goose move interval
-const double GOOSE_MOVE_INTERVAL=0.5;
-/*
-Function prototypes...
+const double GOOSE_MOVE_INTERVAL=0.7;
+const double PLAYER_MOVE_INTERVAL=0.1;
 
-*/
 
 // print the game board function protype
 
 //generates and returns a section of wall
-array<int, 6> wallSection( int start_x,  int start_y,  int end_x,
-                           int end_y,  int tile_x,  int tile_y,
-                           map map, bool render);
+array<int, 6> wallSection(int startX, int startY, int endX,
+                          int endY, int tileX, int tileY,
+                          map map, bool render=false);
+//generates a random amount of wall in each tile and returns them
+vector<array<int, 6>> genWall(map map);
 
+vector<Actor> genMonster(int);
 // move player based on keypresses, could use look-up table or switches
 bool movePlayer(int key, Actor & player, map map);
 
 // event(s) for when the goose catches the player, can have a fight, HP bar, etc
-bool captured(Actor const & player, Actor const & monster);
+bool captured(Actor const &player, vector<Actor> const &monsters);
 
 // for-fun and quality-of-life functions
-void gooseApproaching(Actor &player, Actor &monster);
+void gooseApproaching(Actor &player, vector<Actor> &monsters);
 
 void
 renderEnv(const Actor &player, const vector<array<int,6>> &walls, const Actor &win, map map);
