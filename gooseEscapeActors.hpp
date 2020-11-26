@@ -141,7 +141,7 @@ public:
         {
             int new_x = location_x + delta_x;
             int new_y = location_y + delta_y;
-            if (location_tile_x != 0 && new_x < MIN_BOARD_X)
+            if (location_tile_x != 0 && new_x <= MIN_BOARD_X)
             {
                 location_x = MAX_BOARD_X;
                 location_tile_x--;
@@ -157,7 +157,7 @@ public:
                     terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
                                         NUM_BOARD_Y);
             }
-            if (location_tile_y != 0 && new_y < MIN_BOARD_Y)
+            if (location_tile_y != 0 && new_y <= MIN_BOARD_Y)
             {
                 location_y = MAX_BOARD_Y;
                 location_tile_y--;

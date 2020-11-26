@@ -44,8 +44,8 @@ const int MAX_CONSOLE_Y = MAX_SCREEN_Y;
  * The amount of tiles in the game.
  * Each tile represents a screen.
  */
-const int TILES_X=10;
-const int TILES_Y=10;
+const int TILES_X=6;
+const int TILES_Y=6;
 
 typedef int map[NUM_BOARD_X][NUM_BOARD_Y][TILES_X][TILES_Y];
 
