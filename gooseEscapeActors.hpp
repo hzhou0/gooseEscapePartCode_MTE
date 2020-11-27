@@ -29,56 +29,39 @@ File for the Actor class
     more appropriate for working with multiple files, and improve the class code.
 */
 
-class Actor {
-private:
+class Actor
+{
+  private:
     int actorChar{};
     int location_x, location_y;
-    int location_tile_x, location_tile_y;
 
-public:
+  public:
     Actor()
     {
         actorChar = int('A');
         location_x = MIN_SCREEN_X;
         location_y = MIN_SCREEN_Y;
-        location_tile_x = 0;
-        location_tile_y = 0;
         put_actor();
     }
 
-    Actor(char initPlayerChar, int x0, int y0, int tx0, int ty0,
-          bool render = true)
+    Actor(char initPlayerChar, int x0, int y0)
     {
         change_char(initPlayerChar);
         location_x = MIN_SCREEN_X;
         location_y = MIN_SCREEN_Y;
-        location_tile_x = tx0;
-        location_tile_y = ty0;
-        update_location(x0, y0, *this);
-        if (render)
-            put_actor();
+        update_location(x0,y0);
     }
-
+    
     int get_x() const
     {
         return location_x;
     }
-
+    
     int get_y() const
     {
         return location_y;
     }
-    //returns the tile locations
-    int get_tile_x() const
-    {
-        return location_tile_x;
-    }
-
-    int get_tile_y() const
-    {
-        return location_tile_y;
-    }
-
+    
     string get_location_string() const
     {
         char buffer[80];
@@ -90,22 +73,10 @@ public:
         formatted_location += string(buffer) + ")";
         return formatted_location;
     }
-
-    string print_tile_string() const
-    {
-        char buffer[80];
-        //itoa(location_x,buffer,10);
-        sprintf(buffer, "%d", location_tile_x);
-        string formatted_location = "(" + string(buffer) + ",";
-        //itoa(location_y,buffer,10);
-        sprintf(buffer, "%d", location_tile_y);
-        formatted_location += string(buffer) + ")";
-        return formatted_location;
-    }
-
+    
     void change_char(char new_actor_char)
     {
-        actorChar = min(int('~'), max(int(new_actor_char), int(' ')));
+        actorChar = min(int('~'),max(int(new_actor_char),int(' ')));
     }
 
     bool can_move(int delta_x, int delta_y) const
@@ -114,76 +85,25 @@ public:
         int new_y = location_y + delta_y;
 
         return new_x >= MIN_BOARD_X && new_x <= MAX_BOARD_X
-               && new_y >= MIN_BOARD_Y && new_y <= MAX_BOARD_Y;
+          && new_y >= MIN_BOARD_Y && new_y <= MAX_BOARD_Y;
     }
 
-    bool update_location(int delta_x, int delta_y, Actor &player)
+    void update_location(int delta_x, int delta_y)
     {
         if (can_move(delta_x, delta_y))
         {
-
-            if (actorChar != int('@'))
-            {
-                if (location_tile_x == player.get_tile_x() &&
-                    location_tile_y == player.get_tile_y())
-                {
-                    terminal_clear_area(location_x, location_y, 1, 1);
-                }
-            }
-            else
-            {
-                terminal_clear_area(location_x, location_y, 1, 1);
-            }
+            terminal_clear_area(location_x, location_y, 1, 1);
             location_x += delta_x;
             location_y += delta_y;
+            put_actor();
         }
-        else
-        {
-            int new_x = location_x + delta_x;
-            int new_y = location_y + delta_y;
-            if (location_tile_x != 0 && new_x <= MIN_BOARD_X)
-            {
-                location_x = MAX_BOARD_X;
-                location_tile_x--;
-                if (actorChar == '@')
-                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                        NUM_BOARD_Y);
-            }
-            else if (location_tile_x != TILES_X - 1 && new_x > MAX_BOARD_X)
-            {
-                location_x = MIN_BOARD_X;
-                location_tile_x++;
-                if (actorChar == '@')
-                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                        NUM_BOARD_Y);
-            }
-            if (location_tile_y != 0 && new_y <= MIN_BOARD_Y)
-            {
-                location_y = MAX_BOARD_Y;
-                location_tile_y--;
-                if (actorChar == '@')
-                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                        NUM_BOARD_Y);
-            }
-            else if (location_tile_y != TILES_Y - 1 && new_y > MAX_BOARD_Y)
-            {
-                location_y = MIN_BOARD_Y;
-                location_tile_y++;
-                if (actorChar == '@')
-                    terminal_clear_area(MIN_BOARD_X, MIN_BOARD_Y, NUM_BOARD_X,
-                                        NUM_BOARD_Y);
-            }
-            return true;
-        }
-        return false;
     }
-
+    
     void put_actor() const
     {
         terminal_put(location_x, location_y, actorChar);
         terminal_refresh();
     }
-
+    
 };
-
 #endif
